@@ -1,5 +1,2 @@
-const helloWorld = () => {
-  return 'hello world!';
-};
-
-console.log(helloWorld());
+export { GitlabCICDComponent } from './github';
+export { CICDComponent } from './generics';

@@ -11,4 +11,3 @@ node_modules/
 !/.eslintrc.json
 !/.prettierrc
 !/docker-compose.yml
-!/.projenrc.ts
