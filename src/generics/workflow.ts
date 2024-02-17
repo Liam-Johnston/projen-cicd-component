@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Component } from "projen";
+import { Component, Project } from "projen";
 
 export type WorkflowTriggers = 'code_change_request' | 'push'
 
@@ -14,7 +14,20 @@ export interface Job {
 }
 
 export class Workflow extends Component {
+  protected jobs: Job[]
+  public filepath: string
+
+  constructor(project: Project) {
+    super(project)
+    this.filepath = ''
+    this.jobs = []
+  }
+
   addJob(job: Job) {
-    throw new Error('Method not implemented.');
+    this.jobs.push(job)
+  }
+
+  hasJobs() {
+    return this.jobs.length > 0
   }
 }

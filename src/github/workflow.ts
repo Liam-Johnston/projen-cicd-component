@@ -45,7 +45,6 @@ export class GithubWorkflow extends Workflow {
   public readonly triggerType: string;
   public readonly triggerBranches: string[];
 
-  public readonly jobs: Job[];
   private readonly defaultRunner: string;
 
   constructor(project: Project, options: GithubWorkflowOptions) {
@@ -56,10 +55,6 @@ export class GithubWorkflow extends Workflow {
     this.name = options.name;
     this.jobs = options.jobs ?? [];
     this.defaultRunner = options.defaultRunner ?? 'ubuntu-latest';
-  }
-
-  addJob(job: Job) {
-    this.jobs.push(job);
   }
 
   preSynthesize(): void {
