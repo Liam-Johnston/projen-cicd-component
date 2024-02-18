@@ -6,6 +6,8 @@ RUN apk add --no-cache \
   make \
   bash
 
+RUN git config --global --add safe.directory /app
+
 WORKDIR /app
 
 ENTRYPOINT [ "" ]
