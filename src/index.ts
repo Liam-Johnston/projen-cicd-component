@@ -1,3 +1,3 @@
-export { GitHubCICDComponent } from './github';
-export { CICDComponent } from './generics';
-export { GitlabCICDComponent } from './gitlab';
+export * from './github';
+export * from './generics';
+export * from './gitlab';

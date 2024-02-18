@@ -1,0 +1,12 @@
+{
+  "overrides": {
+    "*": {
+      "typescript": {
+        "compilerOptions": {
+          "target": "es2018",
+          "module": "commonjs"
+        }
+      }
+    }
+  }
+}

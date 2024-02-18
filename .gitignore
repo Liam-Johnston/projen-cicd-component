@@ -7,7 +7,15 @@ node_modules/
 !/tsconfig.projen.json
 !/package.json
 !/Makefile
-!/tsconfig.json
+!/tsconfig.dev.json
 !/.eslintrc.json
 !/.prettierrc
 !/docker-compose.yml
+.jsii
+lib/
+tsconfig.json
+/lib/changelog.md
+/lib/version.txt
+!/.npmignore
+!/gitlab-ci.yml
+!/.gitlab/workflows/push-to-main.yml

@@ -24,6 +24,23 @@
         }
       ]
     },
+    "bump": {
+      "name": "bump",
+      "description": "Bumps version based on latest git tag and generates a changelog entry",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "lib/changelog.md",
+        "BUMPFILE": "lib/version.txt",
+        "RELEASETAG": "lib/releasetag.txt",
+        "RELEASE_TAG_PREFIX": ""
+      },
+      "steps": [
+        {
+          "builtin": "release/bump-version"
+        }
+      ],
+      "condition": "! git log --oneline -1 | grep -q \"chore(release):\""
+    },
     "compile": {
       "name": "compile",
       "description": "Only compile"
@@ -82,6 +99,22 @@
     "test": {
       "name": "test",
       "description": "Run tests"
+    },
+    "unbump": {
+      "name": "unbump",
+      "description": "Restores version to 0.0.0",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "lib/changelog.md",
+        "BUMPFILE": "lib/version.txt",
+        "RELEASETAG": "lib/releasetag.txt",
+        "RELEASE_TAG_PREFIX": ""
+      },
+      "steps": [
+        {
+          "builtin": "release/reset-version"
+        }
+      ]
     },
     "watch": {
       "name": "watch",

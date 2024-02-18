@@ -1,15 +1,29 @@
-import { Component, Project } from 'projen';
+import { IJob, Workflow } from './workflow';
 
-import { Workflow } from './workflow';
+import { Component } from 'projen';
+
+export interface ICICDComponentOptions {
+  codeChangeRequestJobs?: IJob[];
+  pushToMainWorkflowJobs?: IJob[];
+}
 
 export class CICDComponent extends Component {
-  public readonly codeChangeRequestWorkflow: Workflow;
-  public readonly pushToMainWorkflow: Workflow;
+  private _codeChangeRequestWorkflow!: Workflow;
+  private _pushToMainWorkflow!: Workflow;
 
-  constructor(project: Project) {
-    super(project);
+  public get codeChangeRequestWorkflow(): Workflow {
+    return this._codeChangeRequestWorkflow;
+  }
 
-    this.codeChangeRequestWorkflow = new Workflow(project);
-    this.pushToMainWorkflow = new Workflow(project)
+  protected set codeChangeRequestWorkflow(workflow: Workflow) {
+    this._codeChangeRequestWorkflow = workflow;
+  }
+
+  public get pushToMainWorkflow(): Workflow {
+    return this._pushToMainWorkflow;
+  }
+
+  protected set pushToMainWorkflow(workflow: Workflow) {
+    this._pushToMainWorkflow = workflow;
   }
 }

@@ -1,10 +1,7 @@
-import { Job, Workflow, WorkflowTriggers } from '../generics';
+import { IWorkflowOptions, Workflow, WorkflowTriggers } from '../generics';
 import { Project, YamlFile } from 'projen';
 
-interface GitlabWorkflowOptions {
-  name: string;
-  jobs?: Job[];
-  triggerType: WorkflowTriggers;
+export interface IGitlabWorkflowOptions extends IWorkflowOptions {
   defaultTags?: string[];
 }
 
@@ -23,20 +20,12 @@ const generateWorkflowRules = (triggerType: WorkflowTriggers): string[] => {
 };
 
 export class GitlabWorkflow extends Workflow {
-  public readonly name: string;
   public readonly workflowRules: string[];
-  public readonly filepath: string;
-  private readonly defaultTags?: string[]
+  private readonly defaultTags?: string[];
 
-  constructor(project: Project, options: GitlabWorkflowOptions) {
-    super(project);
-
-    this.jobs = options.jobs ?? [];
-    this.name = options.name;
-    this.defaultTags = options.defaultTags
-
-    const fileName = `${options.name.toLowerCase().replaceAll(' ', '-')}.yml`;
-    this.filepath = `./.gitlab/workflows/${fileName}`;
+  constructor(project: Project, options: IGitlabWorkflowOptions) {
+    super(project, options, 'gitlab');
+    this.defaultTags = options.defaultTags;
 
     this.workflowRules = generateWorkflowRules(options.triggerType);
   }
@@ -51,8 +40,8 @@ export class GitlabWorkflow extends Workflow {
     this.jobs.forEach((job) => {
       jobs = {
         [job.name]: {
-          script: job.steps.flatMap(step => step.commands),
-          tags: this.defaultTags
+          script: job.steps.flatMap((step) => step.commands),
+          tags: this.defaultTags,
         },
         ...jobs,
       };
