@@ -1,33 +1,51 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Component, Project } from "projen";
+import { Component, Project } from 'projen';
 
-export type WorkflowTriggers = 'code_change_request' | 'push'
+export type WorkflowTriggers = 'code_change_request' | 'push';
 
-interface JobStep {
+type WorkflowVariants = 'gitlab' | 'github';
+
+export interface IJobStep {
   name?: string;
   commands: string[];
 }
 
-export interface Job {
+export interface IJob {
   name: string;
-  steps: JobStep[];
+  steps: IJobStep[];
+}
+
+export interface IWorkflowOptions {
+  name: string;
+  triggerType: WorkflowTriggers;
+  jobs?: IJob[];
 }
 
 export class Workflow extends Component {
-  protected jobs: Job[]
-  public filepath: string
+  protected jobs: IJob[];
+  protected triggerType: WorkflowTriggers;
+  public readonly filepath: string;
+  public readonly name: string;
 
-  constructor(project: Project) {
-    super(project)
-    this.filepath = ''
-    this.jobs = []
+  constructor(
+    project: Project,
+    options: IWorkflowOptions,
+    workflowVariant: WorkflowVariants,
+  ) {
+    super(project);
+
+    const fileName = `${options.name.toLowerCase().replace(/\s/g, '-')}.yml`;
+    this.filepath = `./.${workflowVariant}/workflows/${fileName}`;
+
+    this.triggerType = options.triggerType;
+    this.name = options.name;
+    this.jobs = options.jobs ?? [];
   }
 
-  addJob(job: Job) {
-    this.jobs.push(job)
+  addJob(job: IJob) {
+    this.jobs.push(job);
   }
 
   hasJobs() {
-    return this.jobs.length > 0
+    return this.jobs.length > 0;
   }
 }

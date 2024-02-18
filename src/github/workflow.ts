@@ -1,11 +1,8 @@
-import { Job, Workflow, WorkflowTriggers } from '../generics/workflow';
+import { IJob, IWorkflowOptions, Workflow } from '../generics/workflow';
 import { Project, YamlFile } from 'projen';
 
-interface GithubWorkflowOptions {
-  name: string;
+export interface IGithubWorkflowOptions extends IWorkflowOptions {
   defaultRunner?: string;
-  jobs?: Job[];
-  triggerType: WorkflowTriggers;
   triggerBranches?: string[];
 }
 
@@ -17,8 +14,8 @@ const checkoutStep = {
   },
 };
 
-const generateJob = (job: Job, defaultRunner: string) => {
-  const snakeCaseName = job.name.toLowerCase().replaceAll(' ', '_');
+const generateJob = (job: IJob, defaultRunner: string) => {
+  const snakeCaseName = job.name.toLowerCase().replace(/\s/g, '-');
 
   return {
     [snakeCaseName]: {
@@ -28,7 +25,9 @@ const generateJob = (job: Job, defaultRunner: string) => {
         checkoutStep,
         ...job.steps.map(({ name, commands }) => ({
           name,
-          run: commands.reduce((command, newCommand) => command + '\n' + newCommand),
+          run: commands.reduce(
+            (command, newCommand) => command + '\n' + newCommand,
+          ),
         })),
       ],
     },
@@ -41,24 +40,21 @@ const triggerTypeMap = {
 };
 
 export class GithubWorkflow extends Workflow {
-  public readonly name: string;
-  public readonly triggerType: string;
   public readonly triggerBranches: string[];
 
   private readonly defaultRunner: string;
 
-  constructor(project: Project, options: GithubWorkflowOptions) {
-    super(project);
+  constructor(project: Project, options: IGithubWorkflowOptions) {
+    super(project, options, 'github');
 
-    this.triggerType = triggerTypeMap[options.triggerType];
     this.triggerBranches = options.triggerBranches ?? ['main'];
-    this.name = options.name;
-    this.jobs = options.jobs ?? [];
     this.defaultRunner = options.defaultRunner ?? 'ubuntu-latest';
   }
 
   preSynthesize(): void {
-    const fileName = `${this.name.toLowerCase().replaceAll(' ', '-')}.yml`;
+    if (!this.hasJobs()) {
+      return;
+    }
 
     let jobs = {};
 
@@ -66,11 +62,13 @@ export class GithubWorkflow extends Workflow {
       jobs = { ...generateJob(job, this.defaultRunner), ...jobs };
     });
 
-    new YamlFile(this.project, `./.github/workflows/${fileName}`, {
+    const translatedTriggerType = triggerTypeMap[this.triggerType];
+
+    new YamlFile(this.project, this.filepath, {
       obj: {
         name: this.name,
         on: {
-          [this.triggerType]: {
+          [translatedTriggerType]: {
             branches: this.triggerBranches,
           },
         },

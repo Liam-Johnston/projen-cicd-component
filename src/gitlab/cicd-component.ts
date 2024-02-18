@@ -1,24 +1,19 @@
-import { Job, Workflow } from '../generics/workflow';
+import { CICDComponent, ICICDComponentOptions } from '../generics';
 import { Project, YamlFile } from 'projen';
 
-import { CICDComponent } from '../generics';
 import { GitlabWorkflow } from './workflow';
 
-export interface GitlabCICDComponentOptions {
+export interface IGitlabCICDComponentOptions extends ICICDComponentOptions {
   services?: string[];
   beforeScript?: string[];
   defaultTags?: string[];
-  codeChangeRequestJobs?: Job[];
-  pushToMainWorkflowJobs?: Job[];
 }
 
 export class GitlabCICDComponent extends CICDComponent {
-  public readonly codeChangeRequestWorkflow: Workflow;
-  public readonly pushToMainWorkflow: Workflow;
   private readonly services?: string[];
   private readonly beforeScript?: string[];
 
-  constructor(project: Project, options: GitlabCICDComponentOptions) {
+  constructor(project: Project, options: IGitlabCICDComponentOptions) {
     super(project);
 
     this.services = options.services;
@@ -28,14 +23,14 @@ export class GitlabCICDComponent extends CICDComponent {
       name: 'Merge Request',
       triggerType: 'code_change_request',
       defaultTags: options.defaultTags,
-      jobs: options.codeChangeRequestJobs
+      jobs: options.codeChangeRequestJobs,
     });
 
     this.pushToMainWorkflow = new GitlabWorkflow(project, {
       name: 'Push to Main',
       triggerType: 'push',
       defaultTags: options.defaultTags,
-      jobs: options.pushToMainWorkflowJobs
+      jobs: options.pushToMainWorkflowJobs,
     });
   }
 
