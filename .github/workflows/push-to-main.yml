@@ -6,23 +6,13 @@ on:
     branches:
       - main
 jobs:
-  build-and-publish:
-    name: Build and Publish
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-tags: true
-      - name: Build
-        run: make build
-      - name: Bump Version
-        run: |-
-          git config --global --add safe.directory /app
-          make bump
-      - name: Commit Release
-        run: make commit_release
-      - name: Publish to NPM
-        env:
-          NPM_TOKEN: $NPM_TOKEN
-        run: make publish
+      - name: test
+        run: git tag -l

@@ -111,7 +111,7 @@ new GitHubCICDComponent(project, {
         {
           name: 'test',
           commands: [
-            
+            'git tag -l'
           ]
         }
       ]
@@ -119,36 +119,36 @@ new GitHubCICDComponent(project, {
 })
 
 
-new GitHubCICDComponent(project, {
-  pushToMainWorkflowJobs: [
-    {
-      name: 'Build and Publish',
-      steps: [
-        {
-          name: 'Build',
-          commands: ['make build'],
-        },
-        {
-          name: 'Bump Version',
-          commands: [
-            'git config --global --add safe.directory /app',
-            'make bump'
-          ],
-        },
-        {
-          name: 'Commit Release',
-          commands: ['make commit_release'],
-        },
-        {
-          name: 'Publish to NPM',
-          commands: ['make publish'],
-          environmentVariables: {
-            NPM_TOKEN: "$NPM_TOKEN"
-          }
-        },
-      ],
-    },
-  ],
-});
+// new GitHubCICDComponent(project, {
+//   pushToMainWorkflowJobs: [
+//     {
+//       name: 'Build and Publish',
+//       steps: [
+//         {
+//           name: 'Build',
+//           commands: ['make build'],
+//         },
+//         {
+//           name: 'Bump Version',
+//           commands: [
+//             'git config --global --add safe.directory /app',
+//             'make bump'
+//           ],
+//         },
+//         {
+//           name: 'Commit Release',
+//           commands: ['make commit_release'],
+//         },
+//         {
+//           name: 'Publish to NPM',
+//           commands: ['make publish'],
+//           environmentVariables: {
+//             NPM_TOKEN: "$NPM_TOKEN"
+//           }
+//         },
+//       ],
+//     },
+//   ],
+// });
 
 project.synth();
