@@ -17,3 +17,4 @@ tsconfig.json
 !/.npmignore
 /lib/changelog.md
 /lib/version.txt
+!/.github/workflows/push-to-main.yml

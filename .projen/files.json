@@ -2,6 +2,7 @@
   "files": [
     ".eslintrc.json",
     ".gitattributes",
+    ".github/workflows/push-to-main.yml",
     ".gitignore",
     ".npmignore",
     ".prettierrc",

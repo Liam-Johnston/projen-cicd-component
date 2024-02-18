@@ -23,8 +23,9 @@ const generateJob = (job: IJob, defaultRunner: string) => {
       'runs-on': defaultRunner,
       steps: [
         checkoutStep,
-        ...job.steps.map(({ name, commands }) => ({
+        ...job.steps.map(({ name, commands, environmentVariables }) => ({
           name,
+          env: environmentVariables,
           run: commands.reduce(
             (command, newCommand) => command + '\n' + newCommand,
           ),

@@ -6,6 +6,7 @@ type WorkflowVariants = 'gitlab' | 'github';
 
 export interface IJobStep {
   name?: string;
+  environmentVariables?: Record<string, string>
   commands: string[];
 }
 

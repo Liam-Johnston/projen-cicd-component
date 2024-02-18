@@ -1,0 +1,11 @@
+ARG NODE_VERSION
+FROM node:${NODE_VERSION}
+
+RUN apk add --no-cache \
+  make \
+  bash \
+  git
+
+WORKDIR /app
+
+ENTRYPOINT [ "" ]
