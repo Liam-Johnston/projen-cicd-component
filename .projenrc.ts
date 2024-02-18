@@ -42,7 +42,13 @@ const ignoreFile = new IgnoreFile(project, '.npmignore');
 ignoreFile.addPatterns('node_modules/');
 
 project.makefile.addRule({
+  targets: ['install'],
+  recipe: ['docker compose run --rm app bun i']
+})
+
+project.makefile.addRule({
   targets: ['build'],
+  prerequisites: ['install'],
   recipe: ['docker compose run --rm app bun run build'],
 });
 
@@ -107,7 +113,10 @@ new GitHubCICDComponent(project, {
         },
         {
           name: 'Bump Version',
-          commands: ['make bump'],
+          commands: [
+            'git config --global --add safe.directory /app',
+            'make bump'
+          ],
         },
         {
           name: 'Commit Release',
