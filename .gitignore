@@ -15,5 +15,5 @@ node_modules/
 lib/
 tsconfig.json
 !/.npmignore
-!/gitlab-ci.yml
-!/.gitlab/workflows/push-to-main.yml
+/lib/changelog.md
+/lib/version.txt

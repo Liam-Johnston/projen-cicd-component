@@ -40,7 +40,7 @@ export class GitlabCICDComponent extends CICDComponent {
       this.pushToMainWorkflow,
     ].filter((workflow) => workflow.hasJobs());
 
-    new YamlFile(this.project, 'gitlab-ci.yml', {
+    new YamlFile(this.project, '.gitlab-ci.yml', {
       obj: {
         services: this.services,
         beforeScript: this.beforeScript,
