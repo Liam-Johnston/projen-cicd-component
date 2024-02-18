@@ -11,7 +11,7 @@ build: install
 	docker compose run --rm app bun run build
 
 bump:
-	docker compose run --rm app bun run bump
+	docker compose run --rm node npm run bump
 
 node_shell:
 	docker compose run --rm node sh
