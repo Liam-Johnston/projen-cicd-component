@@ -9,6 +9,9 @@ export interface IGithubWorkflowOptions extends IWorkflowOptions {
 const checkoutStep = {
   name: 'Checkout Repository',
   uses: 'actions/checkout@v4',
+  with: {
+    fetchTags: true
+  }
   // with: {
   //   ref: '${{ github.event.pull_request.head.ref }}',
   // },
