@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetchTags: true
       - name: Build
         run: make build
       - name: Bump Version
