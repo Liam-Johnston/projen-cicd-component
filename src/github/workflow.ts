@@ -10,7 +10,8 @@ const checkoutStep = {
   name: 'Checkout Repository',
   uses: 'actions/checkout@v4',
   with: {
-    'fetch-tags': true
+    'fetch-tags': true,
+    'fetch-depth': 0
   }
   // with: {
   //   ref: '${{ github.event.pull_request.head.ref }}',

@@ -14,5 +14,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-tags: true
+          fetch-depth: 0
       - name: test
-        run: git tag -l
+        run: |-
+          git fetch --tags origin
+          git tag -l
