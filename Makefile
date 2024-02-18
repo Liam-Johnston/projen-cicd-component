@@ -4,7 +4,10 @@ all:
 project:
 	docker compose run --rm app bun .projenrc.ts
 
-build:
+install:
+	docker compose run --rm app bun i
+
+build: install
 	docker compose run --rm app bun run build
 
 bump:
