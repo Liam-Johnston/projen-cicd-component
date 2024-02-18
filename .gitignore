@@ -14,8 +14,6 @@ node_modules/
 .jsii
 lib/
 tsconfig.json
-/lib/changelog.md
-/lib/version.txt
 !/.npmignore
 !/gitlab-ci.yml
 !/.gitlab/workflows/push-to-main.yml

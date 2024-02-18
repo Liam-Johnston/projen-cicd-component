@@ -5,8 +5,6 @@
     "url": "https://github.com/Liam-Johnston/projen-cicd-component"
   },
   "scripts": {
-    "bump": "npx projen bump",
-    "unbump": "npx projen unbump",
     "watch": "npx projen watch",
     "start": "bun src/index.ts",
     "build": "jsii --silence-warnings=reserved-word",

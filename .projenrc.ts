@@ -22,11 +22,6 @@ const project = new BunTypescript({
 
 project.gitignore.addPatterns('.jsii', 'lib/', 'tsconfig.json');
 
-new Version(project, {
-  versionInputFile: project.package.file.path,
-  artifactsDirectory: './lib',
-});
-
 project.package.addField('jsii', {
   typescript: {
     compilerOptions: {
@@ -67,6 +62,11 @@ new GitlabCICDComponent(project, {
       ],
     },
   ],
+});
+
+new Version(project, {
+  versionInputFile: project.package.file.path,
+  artifactsDirectory: './lib',
 });
 
 project.makefile.addRule({
