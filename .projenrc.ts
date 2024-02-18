@@ -1,7 +1,7 @@
 import { IgnoreFile, Version } from 'projen';
 
 import { BunTypescript } from 'bun-ts-projen';
-import { GitlabCICDComponent } from './src'
+import { GitlabCICDComponent } from './src';
 
 const project = new BunTypescript({
   devDeps: [
@@ -11,9 +11,9 @@ const project = new BunTypescript({
     'jsii-docgen',
     'jsii-pacmak',
     'jsii-rosetta',
-    'projen@0.76.29'
+    'projen@0.76.29',
   ],
-  repository: "https://github.com/Liam-Johnston/projen-cicd-component",
+  repository: 'https://github.com/Liam-Johnston/projen-cicd-component',
   name: 'projen-cicd-component',
   skipRunCommand: true,
   authorName: 'Liam Johnston',
@@ -30,8 +30,8 @@ new Version(project, {
 project.package.addField('jsii', {
   typescript: {
     compilerOptions: {
-      target: "es2018"
-    }
+      target: 'es2018',
+    },
   },
   tsc: {
     outDir: 'lib',
@@ -57,14 +57,21 @@ project.makefile.addRule({
 });
 
 new GitlabCICDComponent(project, {
-  pushToMainWorkflowJobs: [{
-    name: 'test',
-    steps: [{
-      commands: ['test']
-    }]
-  }]
+  pushToMainWorkflowJobs: [
+    {
+      name: 'test',
+      steps: [
+        {
+          commands: ['test'],
+        },
+      ],
+    },
+  ],
+});
+
+project.makefile.addRule({
+  targets: ['bump'],
+  recipe: ['bun run bump']
 })
-
-
 
 project.synth();
