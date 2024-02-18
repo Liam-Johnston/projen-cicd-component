@@ -102,6 +102,23 @@ project.makefile.addRule({
   recipe: ['docker compose run --rm node npm publish']
 })
 
+
+new GitHubCICDComponent(project, {
+  pushToMainWorkflowJobs: [
+    {
+      name: 'Test',
+      steps: [
+        {
+          name: 'test',
+          commands: [
+            
+          ]
+        }
+      ]
+    }]
+})
+
+
 new GitHubCICDComponent(project, {
   pushToMainWorkflowJobs: [
     {
