@@ -59,7 +59,7 @@ new Version(project, {
 
 project.makefile.addRule({
   targets: ['bump'],
-  recipe: ['docker compose run --rm app bun run bump'],
+  recipe: ['docker compose run --rm node npm run bump'],
 });
 
 project.composeFile.addService('node', {
