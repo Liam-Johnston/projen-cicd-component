@@ -12,3 +12,15 @@ services:
       - type: bind
         source: ./
         target: /app
+  node:
+    build:
+      context: ./containers
+      dockerfile: Dockerfile.node
+      args:
+        NODE_VERSION: 20.11.1-alpine3.18
+    environment:
+      NPM_TOKEN: ${NPM_TOKEN:-}
+    volumes:
+      - type: bind
+        source: ./
+        target: /app

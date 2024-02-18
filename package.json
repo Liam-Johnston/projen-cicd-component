@@ -46,11 +46,6 @@
   "license": "Apache-2.0",
   "version": "0.0.0",
   "jsii": {
-    "typescript": {
-      "compilerOptions": {
-        "target": "es2018"
-      }
-    },
     "tsc": {
       "outDir": "lib",
       "rootDir": "src"
