@@ -51,19 +51,6 @@ project.makefile.addRule({
   recipe: ['bun run build'],
 });
 
-new GitlabCICDComponent(project, {
-  pushToMainWorkflowJobs: [
-    {
-      name: 'test',
-      steps: [
-        {
-          commands: ['test'],
-        },
-      ],
-    },
-  ],
-});
-
 new Version(project, {
   versionInputFile: project.package.file.path,
   artifactsDirectory: './lib',
