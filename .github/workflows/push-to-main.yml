@@ -17,7 +17,9 @@ jobs:
       - name: Build
         run: make build
       - name: Bump Version
-        run: make bump
+        run: |-
+          git config --global --add safe.directory /app
+          make bump
       - name: Commit Release
         run: make commit_release
       - name: Publish to NPM

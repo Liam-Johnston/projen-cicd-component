@@ -113,7 +113,10 @@ new GitHubCICDComponent(project, {
         },
         {
           name: 'Bump Version',
-          commands: ['make bump'],
+          commands: [
+            'git config --global --add safe.directory /app',
+            'make bump'
+          ],
         },
         {
           name: 'Commit Release',
