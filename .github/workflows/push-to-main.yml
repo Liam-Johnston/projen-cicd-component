@@ -6,8 +6,8 @@ on:
     branches:
       - main
 jobs:
-  test:
-    name: Test
+  build-and-publish:
+    name: Build and Publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -15,7 +15,15 @@ jobs:
         with:
           fetch-tags: true
           fetch-depth: 0
-      - name: test
+      - name: Build
+        run: make build
+      - name: Bump Version
         run: |-
-          git fetch --tags origin
-          git tag -l
+          git config --global --add safe.directory /app
+          make bump
+      - name: Commit Release
+        run: make commit_release
+      - name: Publish to NPM
+        env:
+          NPM_TOKEN: $NPM_TOKEN
+        run: make publish

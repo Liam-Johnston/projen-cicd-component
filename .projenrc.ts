@@ -102,53 +102,36 @@ project.makefile.addRule({
   recipe: ['docker compose run --rm node npm publish']
 })
 
-
 new GitHubCICDComponent(project, {
   pushToMainWorkflowJobs: [
     {
-      name: 'Test',
+      name: 'Build and Publish',
       steps: [
         {
-          name: 'test',
+          name: 'Build',
+          commands: ['make build'],
+        },
+        {
+          name: 'Bump Version',
           commands: [
-            'git tag -l'
-          ]
-        }
-      ]
-    }]
-})
-
-
-// new GitHubCICDComponent(project, {
-//   pushToMainWorkflowJobs: [
-//     {
-//       name: 'Build and Publish',
-//       steps: [
-//         {
-//           name: 'Build',
-//           commands: ['make build'],
-//         },
-//         {
-//           name: 'Bump Version',
-//           commands: [
-//             'git config --global --add safe.directory /app',
-//             'make bump'
-//           ],
-//         },
-//         {
-//           name: 'Commit Release',
-//           commands: ['make commit_release'],
-//         },
-//         {
-//           name: 'Publish to NPM',
-//           commands: ['make publish'],
-//           environmentVariables: {
-//             NPM_TOKEN: "$NPM_TOKEN"
-//           }
-//         },
-//       ],
-//     },
-//   ],
-// });
+            'git config --global --add safe.directory /app',
+            'make bump'
+          ],
+        },
+        {
+          name: 'Commit Release',
+          commands: ['make commit_release'],
+        },
+        {
+          name: 'Publish to NPM',
+          commands: ['make publish'],
+          environmentVariables: {
+            NPM_TOKEN: "$NPM_TOKEN"
+          }
+        },
+      ],
+    },
+  ],
+});
 
 project.synth();
