@@ -6,6 +6,3 @@ project:
 
 build:
 	bun run build
-
-bump:
-	bun run bump
