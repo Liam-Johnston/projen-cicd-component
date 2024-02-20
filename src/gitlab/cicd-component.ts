@@ -45,7 +45,7 @@ export class GitlabCICDComponent extends CICDComponent {
         services: this.services,
         before_script: this.beforeScript,
         include: workflowsWithJobs.map((workflow) => ({
-          local: workflow.filepath,
+          local: '/' + workflow.filepath.slice(1),
         })),
       },
     });
