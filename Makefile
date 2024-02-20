@@ -16,15 +16,5 @@ bump:
 node_shell:
 	docker compose run --rm node sh
 
-commit_release:
-	docker compose run --rm node make _commit_release
-
-_commit_release:
-	git config --global user.name 'Github Actions'
-	git config --global user.email 'github@actions.com'
-	git commit -am 'chore(release)'
-	git tag $(cat ./lib/releasetag.txt)
-	git push --follow-tags
-
 publish:
 	docker compose run --rm node npm publish

@@ -82,22 +82,6 @@ project.makefile.addRule({
 });
 
 project.makefile.addRule({
-  targets: ['commit_release'],
-  recipe: ['docker compose run --rm node make _commit_release'],
-});
-
-project.makefile.addRule({
-  targets: ['_commit_release'],
-  recipe: [
-    "git config --global user.name 'Github Actions'",
-    "git config --global user.email 'github@actions.com'",
-    "git commit -am 'chore(release)'",
-    'git tag $(cat ./lib/releasetag.txt)',
-    'git push --follow-tags',
-  ],
-});
-
-project.makefile.addRule({
   targets: ['publish'],
   recipe: ['docker compose run --rm node npm publish']
 })
@@ -120,13 +104,20 @@ new GitHubCICDComponent(project, {
         },
         {
           name: 'Commit Release',
-          commands: ['make commit_release'],
+          commands: [
+            "git config --global user.name 'Github Actions'",
+            "git config --global user.email 'github@actions.com'",
+            "git commit -am 'chore(release)'",
+            'git tag $(cat ./lib/releasetag.txt)',
+            'git push',
+            'git push --tags'
+          ],
         },
         {
           name: 'Publish to NPM',
           commands: ['make publish'],
           environmentVariables: {
-            NPM_TOKEN: "$NPM_TOKEN"
+            NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
           }
         },
       ],
