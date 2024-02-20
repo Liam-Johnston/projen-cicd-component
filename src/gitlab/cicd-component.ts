@@ -43,7 +43,7 @@ export class GitlabCICDComponent extends CICDComponent {
     new YamlFile(this.project, '.gitlab-ci.yml', {
       obj: {
         services: this.services,
-        before_sript: this.beforeScript,
+        before_script: this.beforeScript,
         include: workflowsWithJobs.map((workflow) => ({
           local: workflow.filepath,
         })),
