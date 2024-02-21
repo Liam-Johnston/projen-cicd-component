@@ -22,7 +22,7 @@ const pushToMainRules = [
 
 interface IncludeBlock {
   local: string;
-  rules: { if: string }[];
+  rules: { if: string };
 }
 
 const generateIncludes = (
@@ -34,14 +34,18 @@ const generateIncludes = (
   if (codeChangeRequestWorkflow.hasJobs()) {
     include.push({
       local: codeChangeRequestWorkflow.filepath.slice(1),
-      rules: codeChangeRequestRules.map((rule) => ({ if: rule })),
+      rules: {
+        if: codeChangeRequestRules.join(' && '),
+      },
     });
   }
 
   if (pushToMainWorkflow.hasJobs()) {
     include.push({
       local: pushToMainWorkflow.filepath.slice(1),
-      rules: pushToMainRules.map((rule) => ({ if: rule })),
+      rules: {
+        if: pushToMainRules.join(' && '),
+      },
     });
   }
 
