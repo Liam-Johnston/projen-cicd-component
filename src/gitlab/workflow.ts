@@ -1,6 +1,5 @@
 import {
   IJob,
-  IJobArtefactDependancy,
   IJobStep,
   IWorkflowOptions,
   Workflow,
