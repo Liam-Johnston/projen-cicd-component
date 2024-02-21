@@ -9,17 +9,16 @@ export interface IGitlabCICDComponentOptions extends ICICDComponentOptions {
   defaultTags?: string[];
   artefactExpiry?: string;
   manualJobs?: string[];
+
+  codeChangeRequestRule?: string;
+  pushToMainRule?: string;
 }
 
-const codeChangeRequestRules = [
-  '$CI_PIPELINE_SOURCE == "merge_request_event"',
-  '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH',
-];
+const defaultCodeChangeRequestRule =
+  '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH';
 
-const pushToMainRules = [
-  '$CI_PIPELINE_SOURCE == "push"',
-  '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH',
-];
+const defaultPushToMainRules =
+  '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH';
 
 interface IncludeBlock {
   local: string;
@@ -28,7 +27,9 @@ interface IncludeBlock {
 
 const generateIncludes = (
   codeChangeRequestWorkflow: Workflow,
+  codeChangeRequestRule: string,
   pushToMainWorkflow: Workflow,
+  pushToMainRule: string,
 ): IncludeBlock[] | undefined => {
   const include: IncludeBlock[] = [];
 
@@ -37,7 +38,7 @@ const generateIncludes = (
       local: codeChangeRequestWorkflow.filepath.slice(1),
       rules: [
         {
-          if: codeChangeRequestRules.join(' && '),
+          if: codeChangeRequestRule,
         },
       ],
     });
@@ -48,7 +49,7 @@ const generateIncludes = (
       local: pushToMainWorkflow.filepath.slice(1),
       rules: [
         {
-          if: pushToMainRules.join(' && '),
+          if: pushToMainRule,
         },
       ],
     });
@@ -64,9 +65,15 @@ const generateIncludes = (
 export class GitlabCICDComponent extends CICDComponent {
   private readonly services?: string[];
   private readonly beforeScript?: string[];
+  private readonly pushToMainRule: string;
+  private readonly codeChangeRequestRule: string;
 
   constructor(project: Project, options: IGitlabCICDComponentOptions) {
     super(project);
+
+    this.pushToMainRule = options.pushToMainRule ?? defaultPushToMainRules;
+    this.codeChangeRequestRule =
+      options.codeChangeRequestRule ?? defaultCodeChangeRequestRule;
 
     this.services = options.services;
     this.beforeScript = options.beforeScript;
@@ -99,7 +106,9 @@ export class GitlabCICDComponent extends CICDComponent {
         before_script: this.beforeScript,
         include: generateIncludes(
           this.codeChangeRequestWorkflow,
+          this.codeChangeRequestRule,
           this.pushToMainWorkflow,
+          this.pushToMainRule
         ),
       },
     });
