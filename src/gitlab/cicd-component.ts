@@ -8,6 +8,7 @@ export interface IGitlabCICDComponentOptions extends ICICDComponentOptions {
   beforeScript?: string[];
   defaultTags?: string[];
   artefactExpiry?: string;
+  manualJobs?: string[];
 }
 
 const codeChangeRequestRules = [
@@ -34,18 +35,22 @@ const generateIncludes = (
   if (codeChangeRequestWorkflow.hasJobs()) {
     include.push({
       local: codeChangeRequestWorkflow.filepath.slice(1),
-      rules: [{
-        if: codeChangeRequestRules.join(' && '),
-      }],
+      rules: [
+        {
+          if: codeChangeRequestRules.join(' && '),
+        },
+      ],
     });
   }
 
   if (pushToMainWorkflow.hasJobs()) {
     include.push({
       local: pushToMainWorkflow.filepath.slice(1),
-      rules: [{
-        if: pushToMainRules.join(' && '),
-      }],
+      rules: [
+        {
+          if: pushToMainRules.join(' && '),
+        },
+      ],
     });
   }
 
@@ -74,6 +79,7 @@ export class GitlabCICDComponent extends CICDComponent {
       defaultTags: options.defaultTags,
       jobs: options.codeChangeRequestJobs,
       artefactExpiry,
+      manualJobs: options.manualJobs,
     });
 
     this.pushToMainWorkflow = new GitlabWorkflow(project, {
@@ -82,6 +88,7 @@ export class GitlabCICDComponent extends CICDComponent {
       defaultTags: options.defaultTags,
       jobs: options.pushToMainWorkflowJobs,
       artefactExpiry,
+      manualJobs: options.manualJobs,
     });
   }
 

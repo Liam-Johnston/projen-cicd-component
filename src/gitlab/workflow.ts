@@ -1,14 +1,10 @@
-import {
-  IJob,
-  IJobStep,
-  IWorkflowOptions,
-  Workflow,
-} from '../generics';
+import { IJob, IJobStep, IWorkflowOptions, Workflow } from '../generics';
 import { Project, YamlFile } from 'projen';
 
 export interface IGitlabWorkflowOptions extends IWorkflowOptions {
   defaultTags?: string[];
   artefactExpiry: string;
+  manualJobs?: string[];
 }
 
 const generateVariables = (
@@ -58,10 +54,10 @@ const generateArtifacts = (
 };
 
 const generateTags = (
-  deafultTags?: string[],
+  deafultTags: string[],
   environment?: string,
 ): string[] | undefined => {
-  return (deafultTags ?? []).concat(environment ?? []);
+  return deafultTags.concat(environment ?? []);
 };
 
 interface Dependancy {
@@ -94,15 +90,25 @@ const generateDependancies = (job: IJob): Dependancy[] | undefined => {
   return dependancies;
 };
 
+const generateWhen = (job: IJob, manualJobs: string[]) => {
+  if (!manualJobs.includes(job.name)) {
+    return undefined;
+  }
+  return {
+    when: 'manual',
+  };
+};
+
 export class GitlabWorkflow extends Workflow {
-  private readonly defaultTags?: string[];
+  private readonly defaultTags: string[];
   private readonly artefactExpiry: string;
+  private readonly manualJobs: string[];
 
   constructor(project: Project, options: IGitlabWorkflowOptions) {
     super(project, options, 'gitlab');
-    this.defaultTags = options.defaultTags;
+    this.defaultTags = options.defaultTags ?? [];
     this.artefactExpiry = options.artefactExpiry;
-
+    this.manualJobs = options.manualJobs ?? [];
   }
 
   preSynthesize(): void {
@@ -120,6 +126,7 @@ export class GitlabWorkflow extends Workflow {
           tags: generateTags(this.defaultTags, job.environment),
           artifacts: generateArtifacts(job.steps, this.artefactExpiry),
           needs: generateDependancies(job),
+          when: generateWhen(job, this.manualJobs),
         },
         ...jobs,
       };
