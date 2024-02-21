@@ -27,13 +27,20 @@ const generateWorkflowRules = (triggerType: WorkflowTriggers): string[] => {
 
 const generateVariables = (
   steps: IJobStep[],
+  environment: string | undefined,
 ): Record<string, string> | undefined => {
+  const environmentVariables: Record<string, string> = {};
+
+  if (environment !== undefined) {
+    environmentVariables['ENVIRONMENT'] = environment;
+  }
+
   const jobEnvironmentVariables = steps.reduce(
     (environmentVariables, step) => ({
       ...environmentVariables,
       ...step.environmentVariables,
     }),
-    {},
+    environmentVariables,
   );
 
   if (Object.keys(jobEnvironmentVariables).length === 0) {
@@ -64,6 +71,13 @@ const generateArtifacts = (
   };
 };
 
+const generateTags = (
+  deafultTags?: string[],
+  environment?: string,
+): string[] | undefined => {
+  return (deafultTags ?? []).concat(environment ?? []);
+};
+
 export class GitlabWorkflow extends Workflow {
   public readonly workflowRules: string[];
   private readonly defaultTags?: string[];
@@ -88,8 +102,8 @@ export class GitlabWorkflow extends Workflow {
       jobs = {
         [job.name]: {
           script: job.steps.flatMap((step) => step.commands),
-          variables: generateVariables(job.steps),
-          tags: this.defaultTags,
+          variables: generateVariables(job.steps, job.environment),
+          tags: generateTags(this.defaultTags, job.environment),
           artifacts: generateArtifacts(job.steps, this.artefactExpiry),
         },
         ...jobs,

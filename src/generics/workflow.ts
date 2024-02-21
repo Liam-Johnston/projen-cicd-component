@@ -14,6 +14,7 @@ export interface IJobStep {
 export interface IJob {
   name: string;
   steps: IJobStep[];
+  environment?: string;
 }
 
 export interface IWorkflowOptions {
