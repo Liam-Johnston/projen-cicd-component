@@ -3,7 +3,6 @@ import {
   IJobStep,
   IWorkflowOptions,
   Workflow,
-  WorkflowTriggers,
 } from '../generics';
 import { Project, YamlFile } from 'projen';
 
@@ -11,20 +10,6 @@ export interface IGitlabWorkflowOptions extends IWorkflowOptions {
   defaultTags?: string[];
   artefactExpiry: string;
 }
-
-const generateWorkflowRules = (triggerType: WorkflowTriggers): string[] => {
-  if (triggerType === 'code_change_request') {
-    return [
-      '$CI_PIPELINE_SOURCE == "merge_request_event"',
-      '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH',
-    ];
-  }
-
-  return [
-    '$CI_PIPELINE_SOURCE == "push"',
-    '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH',
-  ];
-};
 
 const generateVariables = (
   steps: IJobStep[],
@@ -110,7 +95,6 @@ const generateDependancies = (job: IJob): Dependancy[] | undefined => {
 };
 
 export class GitlabWorkflow extends Workflow {
-  public readonly workflowRules: string[];
   private readonly defaultTags?: string[];
   private readonly artefactExpiry: string;
 
@@ -119,7 +103,6 @@ export class GitlabWorkflow extends Workflow {
     this.defaultTags = options.defaultTags;
     this.artefactExpiry = options.artefactExpiry;
 
-    this.workflowRules = generateWorkflowRules(options.triggerType);
   }
 
   preSynthesize(): void {
@@ -144,9 +127,6 @@ export class GitlabWorkflow extends Workflow {
 
     new YamlFile(this.project, this.filepath, {
       obj: {
-        workflow: {
-          rules: this.workflowRules.map((rule) => ({ if: rule })),
-        },
         ...jobs,
       },
     });
