@@ -1,8 +1,14 @@
-import { IWorkflowOptions, Workflow, WorkflowTriggers } from '../generics';
+import {
+  IJobStep,
+  IWorkflowOptions,
+  Workflow,
+  WorkflowTriggers,
+} from '../generics';
 import { Project, YamlFile } from 'projen';
 
 export interface IGitlabWorkflowOptions extends IWorkflowOptions {
   defaultTags?: string[];
+  artefactExpiry: string;
 }
 
 const generateWorkflowRules = (triggerType: WorkflowTriggers): string[] => {
@@ -17,6 +23,44 @@ const generateWorkflowRules = (triggerType: WorkflowTriggers): string[] => {
     '$CI_PIPELINE_SOURCE == "push"',
     '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH',
   ];
+};
+
+const generateVariables = (
+  steps: IJobStep[],
+): Record<string, string> | undefined => {
+  const jobEnvironmentVariables = steps.reduce(
+    (environmentVariables, step) => ({
+      ...environmentVariables,
+      ...step.environmentVariables,
+    }),
+    {},
+  );
+
+  if (Object.keys(jobEnvironmentVariables).length === 0) {
+    return undefined;
+  }
+
+  return jobEnvironmentVariables;
+};
+
+const generateArtifacts = (
+  steps: IJobStep[],
+): Record<string, string | string[]> | undefined => {
+  const artefactPaths = steps.reduce(
+    (determinedPaths, step) =>
+      determinedPaths.concat(step.artifactDirectorys ?? []),
+    [] as string[],
+  );
+
+  if (artefactPaths.length === 0) {
+    return undefined;
+  }
+
+  return {
+    paths: artefactPaths,
+    when: 'on_success',
+    expire_in: '30 days',
+  };
 };
 
 export class GitlabWorkflow extends Workflow {
@@ -41,7 +85,9 @@ export class GitlabWorkflow extends Workflow {
       jobs = {
         [job.name]: {
           script: job.steps.flatMap((step) => step.commands),
+          variables: generateVariables(job.steps),
           tags: this.defaultTags,
+          artifacts: generateArtifacts(job.steps),
         },
         ...jobs,
       };

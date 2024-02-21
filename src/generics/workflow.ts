@@ -5,9 +5,10 @@ export type WorkflowTriggers = 'code_change_request' | 'push';
 type WorkflowVariants = 'gitlab' | 'github';
 
 export interface IJobStep {
-  name?: string;
-  environmentVariables?: Record<string, string>
   commands: string[];
+  name?: string;
+  environmentVariables?: Record<string, string>;
+  artifactDirectorys?: string[];
 }
 
 export interface IJob {
