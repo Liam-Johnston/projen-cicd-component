@@ -45,6 +45,7 @@ const generateVariables = (
 
 const generateArtifacts = (
   steps: IJobStep[],
+  artefactExpiry: string,
 ): Record<string, string | string[]> | undefined => {
   const artefactPaths = steps.reduce(
     (determinedPaths, step) =>
@@ -59,17 +60,19 @@ const generateArtifacts = (
   return {
     paths: artefactPaths,
     when: 'on_success',
-    expire_in: '30 days',
+    expire_in: artefactExpiry,
   };
 };
 
 export class GitlabWorkflow extends Workflow {
   public readonly workflowRules: string[];
   private readonly defaultTags?: string[];
+  private readonly artefactExpiry: string;
 
   constructor(project: Project, options: IGitlabWorkflowOptions) {
     super(project, options, 'gitlab');
     this.defaultTags = options.defaultTags;
+    this.artefactExpiry = options.artefactExpiry;
 
     this.workflowRules = generateWorkflowRules(options.triggerType);
   }
@@ -87,7 +90,7 @@ export class GitlabWorkflow extends Workflow {
           script: job.steps.flatMap((step) => step.commands),
           variables: generateVariables(job.steps),
           tags: this.defaultTags,
-          artifacts: generateArtifacts(job.steps),
+          artifacts: generateArtifacts(job.steps, this.artefactExpiry),
         },
         ...jobs,
       };
