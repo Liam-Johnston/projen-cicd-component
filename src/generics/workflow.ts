@@ -4,11 +4,17 @@ export type WorkflowTriggers = 'code_change_request' | 'push';
 
 type WorkflowVariants = 'gitlab' | 'github';
 
+export interface IJobArtefactDependancy {
+  jobName: string;
+}
+
 export interface IJobStep {
   commands: string[];
   name?: string;
   environmentVariables?: Record<string, string>;
-  artifactDirectorys?: string[];
+  artifactDirectories?: string[];
+  artefactDependancies?: IJobArtefactDependancy[];
+  jobDependancies?: string[];
 }
 
 export interface IJob {

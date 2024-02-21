@@ -1,4 +1,6 @@
 import {
+  IJob,
+  IJobArtefactDependancy,
   IJobStep,
   IWorkflowOptions,
   Workflow,
@@ -56,7 +58,7 @@ const generateArtifacts = (
 ): Record<string, string | string[]> | undefined => {
   const artefactPaths = steps.reduce(
     (determinedPaths, step) =>
-      determinedPaths.concat(step.artifactDirectorys ?? []),
+      determinedPaths.concat(step.artifactDirectories ?? []),
     [] as string[],
   );
 
@@ -76,6 +78,36 @@ const generateTags = (
   environment?: string,
 ): string[] | undefined => {
   return (deafultTags ?? []).concat(environment ?? []);
+};
+
+interface Dependancy {
+  job: string;
+  artifacts?: boolean;
+}
+
+const generateDependancies = (job: IJob): Dependancy[] | undefined => {
+  const dependancies: Dependancy[] = [];
+
+  job.steps.forEach((step) => {
+    step.jobDependancies?.forEach((dependancy) => {
+      dependancies.push({
+        job: dependancy,
+      });
+    });
+
+    step.artefactDependancies?.forEach((dependancy) => {
+      dependancies.push({
+        job: dependancy.jobName,
+        artifacts: true,
+      });
+    });
+  });
+
+  if (dependancies.length === 0) {
+    return undefined;
+  }
+
+  return dependancies;
 };
 
 export class GitlabWorkflow extends Workflow {
@@ -105,6 +137,7 @@ export class GitlabWorkflow extends Workflow {
           variables: generateVariables(job.steps, job.environment),
           tags: generateTags(this.defaultTags, job.environment),
           artifacts: generateArtifacts(job.steps, this.artefactExpiry),
+          needs: generateDependancies(job),
         },
         ...jobs,
       };
