@@ -94,9 +94,8 @@ const generateWhen = (job: IJob, manualJobs: string[]) => {
   if (!manualJobs.includes(job.name)) {
     return undefined;
   }
-  return {
-    when: 'manual',
-  };
+
+  return 'manual'
 };
 
 export class GitlabWorkflow extends Workflow {
