@@ -9,16 +9,7 @@ export interface IGitlabCICDComponentOptions extends ICICDComponentOptions {
   defaultTags?: string[];
   artefactExpiry?: string;
   manualJobs?: string[];
-
-  codeChangeRequestRule?: string;
-  pushToMainRule?: string;
 }
-
-const defaultCodeChangeRequestRule =
-  '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH';
-
-const defaultPushToMainRules =
-  '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH';
 
 interface IncludeBlock {
   local: string;
@@ -27,9 +18,7 @@ interface IncludeBlock {
 
 const generateIncludes = (
   codeChangeRequestWorkflow: Workflow,
-  codeChangeRequestRule: string,
   pushToMainWorkflow: Workflow,
-  pushToMainRule: string,
 ): IncludeBlock[] | undefined => {
   const include: IncludeBlock[] = [];
 
@@ -38,7 +27,7 @@ const generateIncludes = (
       local: codeChangeRequestWorkflow.filepath.slice(1),
       rules: [
         {
-          if: codeChangeRequestRule,
+          if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH',
         },
       ],
     });
@@ -49,7 +38,7 @@ const generateIncludes = (
       local: pushToMainWorkflow.filepath.slice(1),
       rules: [
         {
-          if: pushToMainRule,
+          if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH',
         },
       ],
     });
@@ -65,15 +54,9 @@ const generateIncludes = (
 export class GitlabCICDComponent extends CICDComponent {
   private readonly services?: string[];
   private readonly beforeScript?: string[];
-  private readonly pushToMainRule: string;
-  private readonly codeChangeRequestRule: string;
 
   constructor(project: Project, options: IGitlabCICDComponentOptions) {
     super(project);
-
-    this.pushToMainRule = options.pushToMainRule ?? defaultPushToMainRules;
-    this.codeChangeRequestRule =
-      options.codeChangeRequestRule ?? defaultCodeChangeRequestRule;
 
     this.services = options.services;
     this.beforeScript = options.beforeScript;
@@ -100,16 +83,32 @@ export class GitlabCICDComponent extends CICDComponent {
   }
 
   preSynthesize(): void {
+    const include = generateIncludes(
+      this.codeChangeRequestWorkflow,
+      this.pushToMainWorkflow,
+    );
+
+    // If there are no workflow jobs, don't create a file
+    if (include === undefined) {
+      return;
+    }
+
+    // Using this so there is a visible job in the main pipeline to pass yaml validation errors
+    const nullJob = {
+      script: 'echo "null"',
+      rules: [
+        {
+          if: '1 == 0',
+        },
+      ],
+    };
+
     new YamlFile(this.project, '.gitlab-ci.yml', {
       obj: {
         services: this.services,
         before_script: this.beforeScript,
-        include: generateIncludes(
-          this.codeChangeRequestWorkflow,
-          this.codeChangeRequestRule,
-          this.pushToMainWorkflow,
-          this.pushToMainRule
-        ),
+        include,
+        'null:job': nullJob,
       },
     });
   }
