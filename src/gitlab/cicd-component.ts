@@ -6,6 +6,8 @@ import { GitlabWorkflow } from './workflow';
 // The merge_request_event pipeline trigger is buggy so as a workaround we can just execute like this.
 const CODE_CHANGE_REQUEST_RULE =
   '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH';
+const CODE_CHANGE_EVENT_RULE =
+  '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH';
 const PUSH_TO_MAIN_RULE =
   '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH';
 
@@ -34,6 +36,9 @@ const generateIncludes = (
       rules: [
         {
           if: CODE_CHANGE_REQUEST_RULE,
+        },
+        {
+          if: CODE_CHANGE_EVENT_RULE,
         },
       ],
     });
