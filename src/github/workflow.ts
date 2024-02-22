@@ -11,11 +11,8 @@ const checkoutStep = {
   uses: 'actions/checkout@v4',
   with: {
     'fetch-tags': true,
-    'fetch-depth': 0
-  }
-  // with: {
-  //   ref: '${{ github.event.pull_request.head.ref }}',
-  // },
+    'fetch-depth': 0,
+  },
 };
 
 const generateJob = (job: IJob, defaultRunner: string) => {

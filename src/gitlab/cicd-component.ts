@@ -3,6 +3,12 @@ import { Project, YamlFile } from 'projen';
 
 import { GitlabWorkflow } from './workflow';
 
+// The merge_request_event pipeline trigger is buggy so as a workaround we can just execute like this.
+const CODE_CHANGE_REQUEST_RULE =
+  '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH';
+const PUSH_TO_MAIN_RULE =
+  '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH';
+
 export interface IGitlabCICDComponentOptions extends ICICDComponentOptions {
   services?: string[];
   beforeScript?: string[];
@@ -27,7 +33,7 @@ const generateIncludes = (
       local: codeChangeRequestWorkflow.filepath.slice(1),
       rules: [
         {
-          if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH',
+          if: CODE_CHANGE_REQUEST_RULE,
         },
       ],
     });
@@ -38,7 +44,7 @@ const generateIncludes = (
       local: pushToMainWorkflow.filepath.slice(1),
       rules: [
         {
-          if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH',
+          if: PUSH_TO_MAIN_RULE,
         },
       ],
     });
@@ -93,22 +99,11 @@ export class GitlabCICDComponent extends CICDComponent {
       return;
     }
 
-    // Using this so there is a visible job in the main pipeline to pass yaml validation errors
-    const nullJob = {
-      script: 'echo "null"',
-      rules: [
-        {
-          if: '1 == 0',
-        },
-      ],
-    };
-
     new YamlFile(this.project, '.gitlab-ci.yml', {
       obj: {
         services: this.services,
         before_script: this.beforeScript,
         include,
-        'null:job': nullJob,
       },
     });
   }
