@@ -90,12 +90,12 @@ const generateDependancies = (job: IJob): Dependancy[] | undefined => {
   return dependancies;
 };
 
-const generateWhen = (job: IJob, manualJobs: string[]) => {
+const generateWhen = (job: IJob, manualJobs: string[]): string | undefined => {
   if (!manualJobs.includes(job.name)) {
     return undefined;
   }
 
-  return 'manual'
+  return 'manual';
 };
 
 export class GitlabWorkflow extends Workflow {
@@ -126,6 +126,7 @@ export class GitlabWorkflow extends Workflow {
           artifacts: generateArtifacts(job.steps, this.artefactExpiry),
           needs: generateDependancies(job),
           when: generateWhen(job, this.manualJobs),
+          resource_group: job.concurrencyGroup,
         },
         ...jobs,
       };

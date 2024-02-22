@@ -21,6 +21,7 @@ export interface IJob {
   name: string;
   steps: IJobStep[];
   environment?: string;
+  concurrencyGroup?: string;
 }
 
 export interface IWorkflowOptions {

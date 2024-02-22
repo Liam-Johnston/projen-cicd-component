@@ -41,8 +41,10 @@ const triggerTypeMap = {
   push: 'push',
 };
 
-// TODO: Handle workflow artefacts
-
+/* TODO:
+ - Handle workflow artefacts
+ - Handle workflow concurrency
+*/
 export class GithubWorkflow extends Workflow {
   public readonly triggerBranches: string[];
 
