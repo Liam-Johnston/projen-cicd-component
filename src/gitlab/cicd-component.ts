@@ -15,7 +15,7 @@ export interface IGitlabCICDComponentOptions extends ICICDComponentOptions {
   services?: string[];
   beforeScript?: string[];
   defaultTags?: string[];
-  artefactExpiry?: string;
+  artifactsExpiry?: string;
   manualJobs?: string[];
 }
 
@@ -72,14 +72,14 @@ export class GitlabCICDComponent extends CICDComponent {
     this.services = options.services;
     this.beforeScript = options.beforeScript;
 
-    const artefactExpiry = options.artefactExpiry ?? '30 days';
+    const artifactsExpiry = options.artifactsExpiry ?? '30 days';
 
     this.codeChangeRequestWorkflow = new GitlabWorkflow(project, {
       name: 'Merge Request',
       triggerType: 'code_change_request',
       defaultTags: options.defaultTags,
       jobs: options.codeChangeRequestJobs,
-      artefactExpiry,
+      artifactsExpiry,
       manualJobs: options.manualJobs,
     });
 
@@ -88,7 +88,7 @@ export class GitlabCICDComponent extends CICDComponent {
       triggerType: 'push',
       defaultTags: options.defaultTags,
       jobs: options.pushToMainWorkflowJobs,
-      artefactExpiry,
+      artifactsExpiry,
       manualJobs: options.manualJobs,
     });
   }

@@ -3,7 +3,7 @@ import { Project, YamlFile } from 'projen';
 
 export interface IGitlabWorkflowOptions extends IWorkflowOptions {
   defaultTags?: string[];
-  artefactExpiry: string;
+  artifactsExpiry: string;
   manualJobs?: string[];
 }
 
@@ -34,22 +34,22 @@ const generateVariables = (
 
 const generateArtifacts = (
   steps: IJobStep[],
-  artefactExpiry: string,
+  artifactsExpiry: string,
 ): Record<string, string | string[]> | undefined => {
-  const artefactPaths = steps.reduce(
+  const artifactsPaths = steps.reduce(
     (determinedPaths, step) =>
       determinedPaths.concat(step.artifactDirectories ?? []),
     [] as string[],
   );
 
-  if (artefactPaths.length === 0) {
+  if (artifactsPaths.length === 0) {
     return undefined;
   }
 
   return {
-    paths: artefactPaths,
+    paths: artifactsPaths,
     when: 'on_success',
-    expire_in: artefactExpiry,
+    expire_in: artifactsExpiry,
   };
 };
 
@@ -75,7 +75,7 @@ const generateDependancies = (job: IJob): Dependancy[] | undefined => {
       });
     });
 
-    step.artefactDependancies?.forEach((dependancy) => {
+    step.artifactsDependancies?.forEach((dependancy) => {
       dependancies.push({
         job: dependancy.jobName,
         artifacts: true,
@@ -100,13 +100,13 @@ const generateWhen = (job: IJob, manualJobs: string[]): string | undefined => {
 
 export class GitlabWorkflow extends Workflow {
   private readonly defaultTags: string[];
-  private readonly artefactExpiry: string;
+  private readonly artifactsExpiry: string;
   private readonly manualJobs: string[];
 
   constructor(project: Project, options: IGitlabWorkflowOptions) {
     super(project, options, 'gitlab');
     this.defaultTags = options.defaultTags ?? [];
-    this.artefactExpiry = options.artefactExpiry;
+    this.artifactsExpiry = options.artifactsExpiry;
     this.manualJobs = options.manualJobs ?? [];
   }
 
@@ -123,7 +123,7 @@ export class GitlabWorkflow extends Workflow {
           script: job.steps.flatMap((step) => step.commands),
           variables: generateVariables(job.steps, job.environment),
           tags: generateTags(this.defaultTags, job.environment),
-          artifacts: generateArtifacts(job.steps, this.artefactExpiry),
+          artifacts: generateArtifacts(job.steps, this.artifactsExpiry),
           needs: generateDependancies(job),
           when: generateWhen(job, this.manualJobs),
           resource_group: job.concurrencyGroup,
