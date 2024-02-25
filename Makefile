@@ -7,14 +7,11 @@ project:
 install:
 	docker compose run --rm app bun i
 
-build: install
+build:
 	docker compose run --rm app bun run build
 
-bump:
-	docker compose run --rm node npm run bump
-
-node_shell:
-	docker compose run --rm node sh
-
 publish:
-	docker compose run --rm node npm publish
+	docker compose run --rm app npm publish
+
+bump:
+	docker compose run --rm app bun run bump

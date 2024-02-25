@@ -16,11 +16,9 @@ jobs:
           fetch-tags: true
           fetch-depth: 0
       - name: Build
-        run: make build
+        run: make install build
       - name: Bump Version
-        run: |-
-          git config --global --add safe.directory /app
-          make bump
+        run: make bump
       - name: Commit Release
         run: |-
           git config --global user.name 'Github Actions'
