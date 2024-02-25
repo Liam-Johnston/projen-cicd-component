@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile.app
       args:
         BUN_VERSION: 1.0.14-alpine
+    environment:
+      NPM_TOKEN: ${NPM_TOKEN:-}
     volumes:
       - type: bind
         source: ./

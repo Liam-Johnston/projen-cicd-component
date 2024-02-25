@@ -18,6 +18,9 @@ const project = new BunTypescript({
   skipRunCommand: true,
   authorName: 'Liam Johnston',
   tsconfigFilename: 'tsconfig.dev.json',
+  appEnvironmentVariables: {
+    NPM_TOKEN: "${NPM_TOKEN:-}"
+  }
 });
 
 project.gitignore.addPatterns('.jsii', 'lib/', 'tsconfig.json');
